@@ -12,75 +12,121 @@ app.use(bodyParser.json());
 
 app.use(express.static('dist'));
 
+const getVersion = ($) => {
+  // add check for comments
+  const versionString = $.html().toString().split('<')[1].split('>')[0];
+  let doctypeCheck = versionString;
+  // check for doctype keyword
+  if (!doctypeCheck.toLowerCase().includes('doctype')) {
+    return { key: 'HTML Version', value: 'DOCTYPE not present' };
+  } else {
+    return { key: 'HTML Version', value: versionString };
+  }
+}
+
+const getTitle = ($) => {
+  const title = $('title').text();
+  return { key: 'Title', value: title };
+}
+
+const getLinks = ($) => {
+  const links = $('a');
+  let linksInternal = 0;
+  let linksExternal = 0;
+  const linksExternalArray = [];
+
+  $(links).each((i, link) => {
+    const checkLink = `${$(link).attr('href')}`;
+    // check for external links with http keyword
+    if (checkLink.startsWith('http')) {
+      linksExternalArray.push(checkLink);
+      linksExternal++;
+    } else {
+      linksInternal++;
+    }
+  });
+  return [
+    { key: 'Internal Links', value: linksInternal },
+    { key: 'External Links', value: linksExternal }
+  ]
+}
+
+const getHeadings = ($) => {
+  const headings = $(':header');
+  const heading = {};
+  let headingsArray = [];
+  // populate object with h1, h2, h3, etc key value pairs
+  $(headings).each((i, head) => {
+    if (heading[$(head).prop('tagName')] === undefined) {
+      heading[$(head).prop('tagName')] = 1;
+    } else {
+      heading[$(head).prop('tagName')] += 1;
+    }
+  });
+
+  // push objects with { "key": "Number of h1", "value": "3" } format
+  for (const prop in heading) {
+    if (heading.hasOwnProperty(prop)) {
+      const innerObj = {};
+      innerObj.key = `Number of ${prop}`;
+      innerObj.value = heading[prop];
+      headingsArray.push(innerObj);
+    }
+  }
+  return headingsArray;
+}
+
+const checkLogin = ($) => {
+  const pattern = new RegExp('Login', 'gi');
+  const match = $('body').text().match(pattern);
+  let loginForm = false;
+
+  // checks for form, input type 'password, and 'login' keyword regex
+  if ($('form').length > 0 && $('form input[type="password"]').length > 0 && match && match.length > 0) {
+    loginForm = 'Present';
+  } else {
+    loginForm = 'Not present';
+  }
+
+  return { key: 'Login Form Present', value: loginForm };
+}
+
 app.post('/api/website', (req, res) => {
-  const website = req.body.website;
+  let website = req.body.website;
+
+  // check for dtd websites
+  if (website.endsWith('dtd')) {
+    website = website.substring(0, website.length - 4);
+  }
+
   request(website, (err, resp, html) => {
     if (!err) {
       const result = [];
-      let linksInternal = 0;
-      let linksExternal = 0;
-      const linksExternalArray = [];
 
       // load html into cheerio
       const $ = cheerio.load(html);
 
       // html version
-      const versionString = $.html().toString().split('<')[1].split('>')[0];
-      result.push({ key: 'HTML Version', value: versionString });
+      result.push(getVersion($));
 
       // get title
-      const title = $('title').text();
-      const links = $('a');
-      result.push({ key: 'Title', value: title });
+      result.push(getTitle($));
 
       // check links
-      $(links).each((i, link) => {
-        const checkLink = `${$(link).attr('href')}`;
-        if (checkLink.startsWith('http')) {
-          linksExternalArray.push(checkLink);
-          linksExternal++;
-        } else {
-          linksInternal++;
-        }
+      let linksArray = getLinks($);
+      linksArray.forEach((link) => {
+        result.push(link);
       });
-
-      result.push(
-        { key: 'Internal Links', value: linksInternal },
-        { key: 'External Links', value: linksExternal }
-      );
 
       // get headings
-      const headings = $(':header');
-      const heading = {};
-      $(headings).each((i, head) => {
-        if (heading[$(head).prop('tagName')] === undefined) {
-          heading[$(head).prop('tagName')] = 1;
-        } else {
-          heading[$(head).prop('tagName')] += 1;
-        }
+      let headingsArray = getHeadings($);
+      headingsArray.forEach((heading) => {
+        result.push(heading);
       });
 
-      for (const prop in heading) {
-        if (heading.hasOwnProperty(prop)) {
-          const innerObj = {};
-          innerObj.key = `Number of ${prop}`;
-          innerObj.value = heading[prop];
-          result.push(innerObj);
-        }
-      }
-
       // check login form
-      const pattern = new RegExp('Login', 'gi');
-      const match = $('body').text().match(pattern);
-      let login_form = false;
+      result.push(checkLogin($));
 
-      if ($('form').length > 0 && $('form input[type="password"]').length > 0 && match && match.length > 0) {
-        login_form = "Present";
-      } else {
-        login_form = "Not present";
-      }
-
-      result.push({ key: 'Login Form Present', value: login_form });
       res.send(result);
     } else {
       res.send([]);
