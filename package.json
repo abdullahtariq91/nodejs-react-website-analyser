@@ -1,0 +1,27 @@
+{
+  "name": "node-js-website-analyser",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^1.5.0",
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "concurrently": "^3.6.1",
+    "cors": "~2.8.3",
+    "express": "^4.16.3",
+    "material-ui": "^0.20.2",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-scripts": "1.1.4",
+    "request": "^2.88.0"
+  },
+  "scripts": {
+    "client": "react-scripts start",
+    "server": "nodemon src/server/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
