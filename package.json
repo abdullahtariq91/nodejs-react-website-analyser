@@ -16,12 +16,16 @@
     "react-scripts": "1.1.4",
     "request": "^2.88.0"
   },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0"
+  },
   "scripts": {
     "client": "react-scripts start",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "mocha",
     "eject": "react-scripts eject"
   }
 }

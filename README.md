@@ -1,6 +1,4 @@
-## Folder Structure
-
-After creation, your project should look like this:
+## Project Structure
 
 ```
 my-app/
@@ -11,7 +9,10 @@ my-app/
     index.html
     favicon.ico
   src/
-    App.css
+    server/ //server files
+      index.js
+      website.js
+    App.css //client files
     App.js
     App.test.js
     index.css
@@ -26,11 +27,13 @@ For the project to build, **these files must exist with exact filenames**:
 
 You can delete or rename the other files.
 
-## Available Scripts
+## Scripts
 
-In the project directory, you can run:
+### `npm install`
 
-### `npm client`
+Installs all packages required for frontend & backend.<br>
+
+### `npm run client`
 
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -38,16 +41,20 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-### `npm server`
+### `npm run server`
 
 Runs the server in the development mode:<br>
 [http://localhost:8080](http://localhost:8080).
 
 The server will reload if you make edits.<br>
 
-### `npm test`
+### `npm run dev`
 
-Launches the test runner in the interactive watch mode.<br>
+Runs the above two commands concurrently.<br>
+
+### `npm run test`
+
+Runs test for the backend functions.<br>
 
 ### `npm run build`
 
@@ -55,3 +62,5 @@ Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br>
+
+The build folder can be hosted using `http-server`.<br>
