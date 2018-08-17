@@ -4,7 +4,6 @@ const http = require('http');
 const URL = require('url');
 
 const getVersion = ($) => {
-  // add check for comments
   const versionString = $.html().toString().split('<')[1].split('>')[0];
   let doctypeCheck = versionString;
   // check for doctype keyword

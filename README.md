@@ -1,7 +1,7 @@
 ## Project Structure
 
 ```
-my-app/
+nodejs-react-website-analyser/
   README.md
   node_modules/
   package.json
@@ -15,17 +15,12 @@ my-app/
     App.css //client files
     App.js
     App.test.js
-    index.css
     index.js
     logo.svg
 ```
 
-For the project to build, **these files must exist with exact filenames**:
-
 * `public/index.html` is the page template;
 * `src/index.js` is the JavaScript entry point.
-
-You can delete or rename the other files.
 
 ## Scripts
 
@@ -63,4 +58,12 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br>
 
-The build folder can be hosted using `http-server`.<br>
+The build folder can be hosted using `http-server` (needs to be installed first, if not present, with `npm install http-server`) .<br>
+
+The server can be run with `node src/server/index.js`.<br>
+
+## Assumptions
+
+1. Checks only for external inaccessible links.
+2. Login form is checked by form, input type 'password', and 'login' keyword regex present in page.
+3. Checks for version in first enclosing tag only. If 'doctype' keyword is not present, returns 'DOCTYPE not present'.
