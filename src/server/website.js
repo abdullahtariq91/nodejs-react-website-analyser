@@ -1,5 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const http = require('http');
+const URL = require('url');
 
 const getVersion = ($) => {
   // add check for comments
@@ -40,21 +42,28 @@ const getLinks = ($) => {
 
 const asyncInaccessibleCheck = (url) => {
   return new Promise((resolve, reject) => {
-    request(url, (err, resp, body) => {
-      if (!err) {
-        if (typeof resp !== 'undefined') {
-          if (resp.statusCode === 200) {
-            return resolve(true);
-          } else {
-            return resolve(false);
-          }
-        } else {
+    try {
+      let options = {
+        method: 'HEAD',
+        host: URL.parse(url).host,
+        path: URL.parse(url).pathname
+      };
+
+      req = http.request(options, function(r) {
+        let statusCode = JSON.stringify(r.statusCode);
+        if (statusCode > 400) {
           return resolve(false);
+        } else {
+          return resolve(true);
         }
-      } else {
-        return resolve(false);
-      }
-    });
+      });
+      req.on('error', (err) => {
+        return resolve(false);        
+      })
+      req.end();
+    } catch (e) {
+      return resolve(false);
+    }
   });
 }
 
@@ -118,50 +127,55 @@ const analyseWebsite = (req, res) => {
     if (website.endsWith('dtd')) {
       website = website.substring(0, website.length - 4);
     }
-  
-    request(website, (err, resp, html) => {
-      if (!err) {
-        const result = [];
-  
-        // load html into cheerio
-        const $ = cheerio.load(html);
-  
-        // html version
-        result.push(getVersion($));
-  
-        // get title
-        result.push(getTitle($));
-  
-        // check links
-        let linksArray = getLinks($);
-        linksArray.forEach((link) => {
-          result.push(link);
-        });
-  
-        // get headings
-        let headingsArray = getHeadings($);
-        headingsArray.forEach((heading) => {
-          result.push(heading);
-        });
+    try {
+      request(website, (err, resp, html) => {
+        if (!err) {
+          const result = [];
 
-        // check login form
-        result.push(checkLogin($));
-        
-        // get inaccessible links
-        getInaccessibleLinks($).then((data) => {
-          let inaccessibleCount = 0;
-          data.forEach((access) => {
-            if (!access) {
-              inaccessibleCount++;
-            }
+          result.push({ key: 'Status Code', value: resp.statusCode });
+    
+          // load html into cheerio
+          const $ = cheerio.load(html);
+    
+          // html version
+          result.push(getVersion($));
+    
+          // get title
+          result.push(getTitle($));
+    
+          // check links
+          let linksArray = getLinks($);
+          linksArray.forEach((link) => {
+            result.push(link);
           });
-          result.push({ key: 'Inaccessible Links', value: inaccessibleCount });
-          return resolve(result);
-        });
-      } else {
-        return reject([]);
-      }
-    });
+    
+          // get headings
+          let headingsArray = getHeadings($);
+          headingsArray.forEach((heading) => {
+            result.push(heading);
+          });
+  
+          // check login form
+          result.push(checkLogin($));
+          
+          // get inaccessible links
+          getInaccessibleLinks($).then((data) => {
+            let inaccessibleCount = 0;
+            data.forEach((access) => {
+              if (!access) {
+                inaccessibleCount++;
+              }
+            });
+            result.push({ key: 'Inaccessible Links', value: inaccessibleCount });
+            return resolve(result);
+          });
+        } else {
+          return reject([]);
+        }
+      });
+    } catch (e) {
+      return reject([]);
+    }
   });
 }
 

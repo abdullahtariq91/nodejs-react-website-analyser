@@ -10,11 +10,10 @@ body {
 body {
   width: 800px;
   margin: 0 auto;
-  font-family: 'Open Sans', sans-serif;
 }
 
 .container {
-  width: 600px;
+  width: 700px;
   margin: 0 auto;
 }
 
@@ -24,31 +23,31 @@ fieldset {
   padding: 30px;
 }
 
-.ghost-input, p {
-  display: block;
-  font-weight:300;
+.cool-input, p {
+  font-weight: 300;
+  margin: 30px 0px;
   width: 100%;
   font-size: 25px;
-  border:0px;
-  outline: none;
+  border: 0px;
+  display: block;
   width: 100%;
   box-sizing: border-box;
   color: #4b545f;
   background: #fff;
+  outline: none;
   font-family: Open Sans,Verdana;
   padding: 10px 15px;
-  margin: 30px 0px;
 }
 
-.ghost-input:focus {
+.cool-input:focus {
   border-bottom:1px solid #ddd;
 }
 
-.ghost-button {
+.cool-button {
   background-color: transparent;
   border:2px solid #ddd;
-  padding:10px 30px;
   width: 100%;
+  padding:10px 30px;
   min-width: 350px;
   font-size: 15px;
   transition: all 0.1s ease-in-out;

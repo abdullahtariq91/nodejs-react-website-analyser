@@ -43,8 +43,8 @@ export default class App extends Component {
     return (
       <div className="container">
         <form onSubmit={this.handleSubmit}>
-          <input type="text" value={value} className="ghost-input" placeholder="Enter Website URL" onChange={this.handleChange} />
-          <input type="submit" value="Submit" className="ghost-button" />
+          <input type="text" value={value} className="cool-input" placeholder="Enter Website URL" onChange={this.handleChange} />
+          <input type="submit" value="Submit" className="cool-button" />
         </form>
         {isError && <p>Website not found</p>}
         {isLoading && <p>Loading...</p>}
